@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "lazy_tensor_core/csrc/ts_backend/TsNode.h"
-#include "lazy_tensor_core/csrc/ops/constant.h"
 #include "lazy_tensor_core/csrc/ops/generic.h"
 #include "lazy_tensor_core/csrc/ops/scalar.h"
 
@@ -20,10 +19,6 @@ inline NodePtr ScalarOp(const at::Scalar& value, torch::lazy::Shape shape) {
 inline NodePtr ScalarOp(const at::Scalar& value,
                         c10::ScalarType type) {
   return torch::lazy::MakeNode<Scalar>(value, type);
-}
-
-inline NodePtr ConstantOp(lazy_tensors::Literal value) {
-  return torch::lazy::MakeNode<Constant>(std::move(value));
 }
 
 inline NodePtr GenericOp(OpKind op, OpList operands,
