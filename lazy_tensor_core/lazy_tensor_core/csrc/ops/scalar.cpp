@@ -3,8 +3,6 @@
 #include <functional>
 #include <sstream>
 
-#include "lazy_tensors/shape_util.h"
-
 namespace torch_lazy_tensors {
 namespace ir {
 namespace ops {
@@ -16,7 +14,7 @@ Scalar::Scalar(const at::Scalar& value, torch::lazy::Shape shape)
 
 Scalar::Scalar(const at::Scalar& value, c10::ScalarType type)
     : TsNode(OpKind(at::prim::Constant),
-           {lazy_tensors::ShapeUtil::MakeShape(type, {})},
+           {torch::lazy::Shape(type, {})},
            /*num_outputs=*/1, ScalarHash(value)),
       value_(std::move(value)) {}
 

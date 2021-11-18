@@ -12,7 +12,6 @@
 #include "lazy_tensor_core/csrc/tensor_util.h"
 #include "lazy_tensor_core/csrc/ts_backend/LazyLazyIr.h"
 #include "lazy_tensors/computation_client/util.h"
-#include "lazy_tensors/shape_util.h"
 #include "torch/csrc/lazy/core/ir_metadata.h"
 
 namespace torch_lazy_tensors {
@@ -148,7 +147,7 @@ NodePtr BroadcastTensors(OpList tensors) {
 NodePtr Identity(int64_t lines, int64_t cols, c10::ScalarType element_type) {
   return GenericOp(
       OpKind(at::aten::eye),
-      lazy_tensors::ShapeUtil::MakeShape(element_type, {lines, cols}),
+      torch::lazy::Shape(element_type, {lines, cols}),
       /*num_outputs=*/1, torch::lazy::MHash(lines, cols));
 }
 
@@ -180,19 +179,17 @@ NodePtr Remainder(const torch::lazy::Value& input, const torch::lazy::Value& div
 }
 
 NodePtr MaxUnary(const torch::lazy::Value& input) {
-  CHECK_GT(lazy_tensors::ShapeUtil::ElementsIn(ir::GetShapeFromTsValue(input)),
-           0);
+  CHECK_GT(ir::GetShapeFromTsValue(input).numel(), 0);
   return GenericOp(
       OpKind(at::aten::max), {input},
-      lazy_tensors::ShapeUtil::MakeShape(ir::GetShapeFromTsValue(input).scalar_type(), {}));
+      torch::lazy::Shape(ir::GetShapeFromTsValue(input).scalar_type(), {}));
 }
 
 NodePtr MinUnary(const torch::lazy::Value& input) {
-  CHECK_GT(lazy_tensors::ShapeUtil::ElementsIn(ir::GetShapeFromTsValue(input)),
-           0);
+  CHECK_GT(ir::GetShapeFromTsValue(input).numel(), 0);
   return GenericOp(
       OpKind(at::aten::min), {input},
-      lazy_tensors::ShapeUtil::MakeShape(ir::GetShapeFromTsValue(input).scalar_type(), {}));
+      torch::lazy::Shape(ir::GetShapeFromTsValue(input).scalar_type(), {}));
 }
 
 NodePtr Take(const torch::lazy::Value& input, const torch::lazy::Value& index) {
